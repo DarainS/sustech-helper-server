@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.darains.sustechserver.repository.UserRepository">
+
+    <resultMap id="user" type="User">
+        <id property="id" column="id"/>
+        <result property="userid" column="userid"/>
+        <result property="password" column="password"/>
+    </resultMap>
+
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+          user (id, userid, password)
+        VALUES
+          (#{id}, #{userid}, #{password})
+    </insert>
+
+    <update id="updateUserOnPasswordById">
+        UPDATE
+          user
+        SET
+          name = #{name}
+        WHERE
+          id = #{id}
+    </update>
+
+    <delete id="deleteUserById">
+        DELETE FROM
+          user
+        WHERE
+          id = #{id}
+    </delete>
+
+    <select id="selectUserById" resultMap="user">
+        SELECT
+          *
+        FROM
+          user
+        WHERE
+          id = #{id}
+    </select>
+
+    <select id="getUserByUserId" resultMap="user">
+        SELECT
+          *
+        FROM
+          user
+        WHERE
+          userid = #{userid}
+    </select>
+
+    <select id="selectAllUsers" resultMap="user">
+        SELECT
+          *
+        FROM
+          user
+    </select>
+
+</mapper>
