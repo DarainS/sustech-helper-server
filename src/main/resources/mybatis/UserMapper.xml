@@ -40,7 +40,7 @@
           id = #{id}
     </select>
 
-    <select id="getUserByUserId" resultMap="user">
+    <select id="getUserByUserid" resultMap="user">
         SELECT
           *
         FROM

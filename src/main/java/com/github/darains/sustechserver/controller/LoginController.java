@@ -1,10 +1,9 @@
 package com.github.darains.sustechserver.controller;
 
 import com.github.darains.sustechserver.entity.Result;
-import com.github.darains.sustechserver.server.UserService;
+import com.github.darains.sustechserver.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
@@ -13,7 +12,7 @@ import javax.validation.constraints.NotNull;
 public class LoginController{
     
     @Autowired
-    UserService userService;
+    UserServiceImpl userService;
     
     @PostMapping(value = "/login")
     public Object login(@RequestParam @NotNull String userid, @RequestParam @NotNull String password){
@@ -29,11 +28,12 @@ public class LoginController{
         return r;
     }
     
-    @GetMapping("/user/info")
-    @PreAuthorize("hasRole('USER')")
-    public Result userInfo(){
+    @GetMapping("/userinfo/{userid}")
+//    @PreAuthorize("principal.username.equals(#userid)")
+    public Result userInfo(@PathVariable String userid){
+//        userService.getUserInfo()
         Result r=new Result();
-        r.setResult("uu");
+        r.setResult(userService.getUserByUserid(userid));
         return r;
     }
     

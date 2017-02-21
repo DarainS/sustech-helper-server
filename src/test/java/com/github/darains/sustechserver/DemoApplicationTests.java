@@ -23,7 +23,7 @@ public class DemoApplicationTests {
 
 	@Test
     public void getUserByUserId(){
-        User user=userRepository.getUserByUserId("shawn");
+        User user=userRepository.getUserByUserid("shawn");
         Assert.assertNotNull(user);
     }
 }

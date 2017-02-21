@@ -6,6 +6,6 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface UserRepository{
-    User getUserByUserId(@Param("userid") String id);
+    User getUserByUserid(@Param("userid") String id);
     int insertUser(User user);
 }
