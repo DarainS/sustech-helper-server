@@ -17,15 +17,17 @@ import java.net.MalformedURLException;
 import java.util.logging.Level;
 
 
-@Component("casClient")
+@Component("sakaiClient")
 @Slf4j
-public class CasClient{
-    @Value("${school.cas.login.url}")
+public class SakaiClient{
+    @Value("${school.sakai.login.url}")
     @Setter
     private String loginUrl;
     @Value("${school.cas.hosturl}")
     @Setter
     private String hostUrl;
+    
+    
     
     @SneakyThrows
     public boolean checkPasswordBySakai(String userid, String password){
@@ -112,7 +114,7 @@ public class CasClient{
     
         java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
         java.util.logging.Logger.getLogger("org.apache.http.client").setLevel(Level.OFF);
-//        LoggerFactory.getLogger(CasClient.class)
+//        LoggerFactory.getLogger(SakaiClient.class)
     
     
         try (final WebClient webClient = new WebClient()) {
@@ -150,7 +152,7 @@ public class CasClient{
     }
     
     public static void main(String[] args){
-        CasClient client=new CasClient();
+        SakaiClient client=new SakaiClient();
         client.setLoginUrl("http://weblogin.sustc.edu.cn/cas/login?service=http://sakai.sustc.edu.cn/portal/login");
         client.setHostUrl("http://weblogin.sustc.edu.cn");
         

@@ -6,18 +6,19 @@ import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-
-public class JsoupCasClient{
+@Component("studentInfoClient")
+public class StudentInfoClient{
     
     private Map<String,?> cookies;
     
     private String ticket;
     
     @SneakyThrows
-    public boolean checkPassword(String userid,String password){
+    public String checkPassword(String userid,String password){
         Connection.Response r1=Jsoup.connect("https://cas.sustc.edu.cn/cas/login?service=https://student.sustc.edu.cn/")
             .followRedirects(false)
             .execute();
@@ -37,9 +38,9 @@ public class JsoupCasClient{
         if (r2.url().toString().startsWith("https://student.sustc.edu.cn/?ticket=")){
             ticket=url.substring(url.indexOf("ticket"));
 //            System.out.println(generateUserInfo(ticket));
-            return true;
+            return ticket;
         }
-        return false;
+        return "";
     }
     
     
@@ -61,7 +62,7 @@ public class JsoupCasClient{
     }
     
     public static void main(String[] args){
-        JsoupCasClient casClient=new JsoupCasClient();
+        StudentInfoClient casClient=new StudentInfoClient();
         casClient.checkPassword("11310388","dengakak");
     }
 }

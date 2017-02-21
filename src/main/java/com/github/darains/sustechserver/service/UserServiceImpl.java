@@ -1,4 +1,4 @@
-package com.github.darains.sustechserver.server;
+package com.github.darains.sustechserver.service;
 
 import com.github.darains.sustechserver.entity.CustomUserDetails;
 import com.github.darains.sustechserver.entity.User;

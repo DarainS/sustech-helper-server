@@ -1,4 +1,4 @@
-package com.github.darains.sustechserver.security;
+package com.github.darains.sustechserver.config;
 
 import com.github.darains.sustechserver.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 @EnableResourceServer
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
+public class SecurityConfiguration extends AuthorizationServerConfigurerAdapter {
 
     @Autowired
     private TokenStore tokenStore;
@@ -51,39 +51,9 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
                 .withClient("client")
                 .secret("app")
                 .authorizedGrantTypes("password","refresh_token")
-            .accessTokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(7))
-                .scopes("read", "write");
-        
-    }
-    
-    @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints
-            .tokenStore(tokenStore)
-            .authenticationManager(authenticationManager)
-            .userDetailsService(userService);
-        
-    }
-
-    @Bean
-    public TokenStore tokenStore() {
-        return new RedisTokenStore(jedisConnectionFactory());
-    }
-
-    @Bean
-    @ConfigurationProperties(prefix="spring.redis")
-    public JedisConnectionFactory jedisConnectionFactory(){
-        return new JedisConnectionFactory();
-    }
-
-
-    @Bean
-    @Primary
-    public DefaultTokenServices tokenServices() {
-        DefaultTokenServices tokenServices = new DefaultTokenServices();
-        tokenServices.setSupportRefreshToken(true); // support refresh token
-        tokenServices.setTokenStore(tokenStore); // use in-memory token store
-        return tokenServices;
+                .accessTokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(7))
+                .scopes("read", "write")
+                .authorities("ROLE_USER");
     }
     
     @Configuration
@@ -98,7 +68,37 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
                 .antMatchers("/login","/druid/**","/druid","/").permitAll()
                 .anyRequest().authenticated();
         }
-        
     }
+    
+    
+    @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        endpoints
+            .tokenStore(tokenStore)
+            .authenticationManager(authenticationManager)
+            .userDetailsService(userService);
+    }
+
+    @Bean
+    public TokenStore tokenStore() {
+        return new RedisTokenStore(jedisConnectionFactory());
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix="spring.redis")
+    public JedisConnectionFactory jedisConnectionFactory(){
+        return new JedisConnectionFactory();
+    }
+    
+    @Bean
+    @Primary
+    public DefaultTokenServices tokenServices() {
+        DefaultTokenServices tokenServices = new DefaultTokenServices();
+        tokenServices.setSupportRefreshToken(true); // support refresh token
+        tokenServices.setTokenStore(tokenStore); // use in-memory token store
+        return tokenServices;
+    }
+    
+    
     
 }

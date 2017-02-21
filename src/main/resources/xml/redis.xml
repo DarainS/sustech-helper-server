@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Use Redis Token Store-->
+<beans
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:beans="http://www.springframework.org/schema/security"
+>
+
+    <!--Use Redis Token Store-->
+    <bean id="tokenStore"
+                class="org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore">
+        <constructor-arg name="connectionFactory" ref="redisConnectionFactory"/>
+    </bean>
+
+    <!--create redis connection factory and set db 1-->
+    <bean id="redisConnectionFactory"
+                class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <property name="hostName" value="localhost"/>
+        <property name="port" value="6379"/>
+        <property name="password" value=""/>
+        <property name="database" value="1"/>
+    </bean>
+</beans>

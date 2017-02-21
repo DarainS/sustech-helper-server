@@ -1,4 +1,4 @@
-package com.github.darains.sustechserver.server;
+package com.github.darains.sustechserver.service;
 
 import org.springframework.stereotype.Service;
 
