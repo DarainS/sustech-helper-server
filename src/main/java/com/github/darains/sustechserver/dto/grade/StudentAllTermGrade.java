@@ -1,4 +1,4 @@
-package com.github.darains.sustechserver.entity.dto.grade;
+package com.github.darains.sustechserver.dto.grade;
 
 
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-public class StudentTermGrade{
+public class StudentAllTermGrade{
     private String studentid;
     private List<TermGrade> termGradeList=new LinkedList<>();
 }

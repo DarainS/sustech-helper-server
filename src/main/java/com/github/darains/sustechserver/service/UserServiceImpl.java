@@ -4,9 +4,11 @@ import com.github.darains.sustechserver.entity.CustomUserDetails;
 import com.github.darains.sustechserver.entity.User;
 import com.github.darains.sustechserver.entity.UserInfo;
 import com.github.darains.sustechserver.repository.UserRepository;
-import com.github.darains.sustechserver.schoolcas.SakaiClient;
-import com.github.darains.sustechserver.schoolcas.StudentInfoClient;
+import com.github.darains.sustechserver.schoolclient.EducationalSystemClient;
+import com.github.darains.sustechserver.schoolclient.SakaiClient;
+import com.github.darains.sustechserver.schoolclient.StudentInfoClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("userService")
 @Slf4j
 public class UserServiceImpl implements UserDetailsService,UserService{
-    
+    @Autowired
+    private EducationalSystemClient educationalSystemClient;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -33,15 +36,23 @@ public class UserServiceImpl implements UserDetailsService,UserService{
     
     public UserInfo getUserInfo(String userid,String password){
         String ticket=studentInfoClient.checkPassword(userid,password);
+        if (StringUtils.isBlank(ticket)){
+            return null;
+        }
         return studentInfoClient.generateUserInfo(ticket);
     }
     
     public boolean checkPassword(String id,String password){
-        boolean check = sakaiClient.checkPasswordBySakai(id,password);
-        if (check){
-            tryInsertUser(new User().setUserid(id).setPassword(password));
+        User user=userRepository.getUserByUserid(id);
+        if (user.getPassword().equals(password)){
+            return true;
         }
-        return check;
+        String ticket = educationalSystemClient.casLogin(id,password);
+        if (StringUtils.isBlank(ticket)){
+            tryInsertUser(new User().setUserid(id).setPassword(password));
+            return true;
+        }
+        return false;
     }
     
     @Transactional

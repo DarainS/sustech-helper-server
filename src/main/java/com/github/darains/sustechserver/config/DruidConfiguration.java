@@ -52,8 +52,6 @@ public class DruidConfiguration{
     public WebStatFilter druidWebStatFilter(){
         WebStatFilter f=new WebStatFilter();
         f.setSessionStatEnable(true);
-        
-        
         return f;
     }
     

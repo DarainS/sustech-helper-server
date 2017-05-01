@@ -1,30 +1,43 @@
-package com.github.darains.sustechserver.schoolcas;
+package com.github.darains.sustechserver.schoolclient;
 
-import com.github.darains.sustechserver.entity.Course;
+import com.github.darains.sustechserver.dto.Course;
+import com.github.darains.sustechserver.dto.grade.Grade;
+import com.github.darains.sustechserver.dto.grade.StudentAllTermGrade;
+import com.github.darains.sustechserver.dto.grade.TermGrade;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Component
+@Slf4j
 public class EducationalSystemClient{
+    
     static final String URL = "http://jwxt.sustc.edu.cn/jsxsd/";
+    
     static final String LOGIN_URL="https://cas.sustc.edu.cn/cas/login?service=http%3A%2F%2Fjwxt.sustc.edu.cn%2Fjsxsd%2F";
+    
     static final String COURSE_TABLE_URL="http://jwxt.sustc.edu.cn/jsxsd/xskb/xskb_list.do";
+    
+    static final String QUERY_GRADE_URL="http://jwxt.sustc.edu.cn/jsxsd/kscj/cjcx_list";
+    
+    @Value("#{'${school.edusystem.termlist}'.split(',')}")
+    public List<String> termNameList;
     
     @Getter
     private String cookie;
     
     @SneakyThrows
     public String casLogin(String username,String password){
+        
         Connection.Response r1=Jsoup.connect(LOGIN_URL).execute();
     
         String lt=r1.parse().select("#fm1 > section.row.btn-row > input[type=\"hidden\"]:nth-child(1)").first().val();
@@ -44,6 +57,7 @@ public class EducationalSystemClient{
     
         
         Connection.Response r31=Jsoup.connect(r2.header("Location"))
+            .timeout(3000)
             .execute();
     
         cookie=r31.cookies().toString();
@@ -84,6 +98,7 @@ public class EducationalSystemClient{
         }
         return set;
     }
+    
     public Course resolveHtmlToCourse(int w,int i,String s){
         Course course=new Course();
         s=s.replace("<br>\n","");
@@ -104,19 +119,77 @@ public class EducationalSystemClient{
         return course;
     }
     
-    public static void main(String[] args) throws IOException{
+    public StudentAllTermGrade crawlStudentAllTermGrades(String cookie){
+        StudentAllTermGrade studentGrades=new StudentAllTermGrade();
+        for(String name:termNameList){
+            try{
+                TermGrade t = crawlTermGrade(cookie, name);
+                if(t.getGradeList().size()>0) {
+                    studentGrades.getTermGradeList().add(t);
+                }
+            }
+            catch(Exception e){
+                //log.warn(e.getMessage());
+            }
+           
+        }
+        return studentGrades;
+    }
+    
+    @SneakyThrows
+    private TermGrade crawlTermGrade(String cookie,String termName){
+        TermGrade termGrade=new TermGrade();
         
+        termGrade.setCourseTerm(termName);
+        
+        Connection.Response r1=Jsoup.connect(QUERY_GRADE_URL)
+            .method(Connection.Method.POST)
+            .header("Cookie",cookie)
+            .data("kksj",termName)
+            .data("kcxz","")
+            .data("kcmc","")
+            .data("xsfs","all")
+            .execute();
+        
+        Element tbody=r1.parse().select("#dataList > tbody").first();
+        
+        int len=tbody.children().size();
+        
+        for(int i=1;i<len;i++){
+            Grade g=resolveGradeFromElement(tbody.child(i));
+            termGrade.getGradeList().add(g);
+        }
+        log.debug("term grade: {}",termGrade);
+        return termGrade;
+    }
+    
+    private Grade resolveGradeFromElement(Element e){
+        Grade grade=new Grade();
+        grade.setCourseid(e.child(2).html())
+            .setCourseName(e.child(3).html())
+            .setGrade(e.child(4).child(0).html().trim())
+            .setCredit(Double.parseDouble(e.child(5).html()))
+            .setCourseAttribute(e.child(8).html().trim());
+//        log.debug("grade:{}",grade);
+        return grade;
+    }
+    
+    
+    public static void CourseGradeTest(){
         EducationalSystemClient client=new EducationalSystemClient();
         client.casLogin("11310388","dengakak");
-        Set s=client.crawlCourseTable(client.cookie);
-//        System.out.println(client.resolveHtmlToCourse(4,2,"软件工程\n"+
-//            "<br>\n"+
-//            "<font title=\"老师\">张煜群</font>\n"+
-//            "<br>\n"+
-//            "<font title=\"周次(节次)\">1-16(周)</font>\n"+
-//            "<br>\n"+
-//            "<font title=\"教室\">一教108</font>\n"+
-//            "<br>"));
+    
+        client.termNameList= new ArrayList<>();
+        client.termNameList.add("2015-2016-2");
+        client.termNameList.add("2016-2017-1");
+    
+        StudentAllTermGrade s=client.crawlStudentAllTermGrades(client.cookie);
+
         System.out.println(s);
+    }
+    
+    public static void main(String[] args) throws IOException{
+        
+    
     }
 }

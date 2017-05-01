@@ -1,4 +1,4 @@
-package com.github.darains.sustechserver.schoolcas;
+package com.github.darains.sustechserver.schoolclient;
 
 import com.github.darains.sustechserver.entity.UserInfo;
 import com.google.gson.Gson;

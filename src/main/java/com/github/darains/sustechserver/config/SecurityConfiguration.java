@@ -48,10 +48,18 @@ public class SecurityConfiguration extends AuthorizationServerConfigurerAdapter 
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients
             .inMemory()
-                .withClient("client")
+                .withClient("app")
                 .secret("app")
                 .authorizedGrantTypes("password","refresh_token")
                 .accessTokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(7))
+                .scopes("read", "write")
+                .authorities("ROLE_USER")
+            .and()
+            .inMemory()
+                .withClient("web")
+                .secret("web")
+                .authorizedGrantTypes("password","refresh_token")
+                .accessTokenValiditySeconds((int) TimeUnit.MINUTES.toSeconds(30))
                 .scopes("read", "write")
                 .authorities("ROLE_USER");
     }

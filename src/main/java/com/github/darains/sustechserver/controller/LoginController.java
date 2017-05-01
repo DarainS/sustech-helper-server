@@ -1,13 +1,15 @@
 package com.github.darains.sustechserver.controller;
 
-import com.github.darains.sustechserver.entity.Result;
+import com.github.darains.sustechserver.dto.HttpResult;
 import com.github.darains.sustechserver.service.UserServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 
+@Slf4j
 @RestController
 public class LoginController{
     
@@ -15,25 +17,24 @@ public class LoginController{
     UserServiceImpl userService;
     
     @PostMapping(value = "/login")
-    public Object login(@RequestParam @NotNull String userid, @RequestParam @NotNull String password){
-        Result r=new Result();
-        if (userService.checkPassword(userid,password)){
-            r.setHttpStatus(HttpStatus.OK);
-            r.setDescription("success");
+    public Object login(@RequestParam @NotNull String username, @RequestParam @NotNull String password){
+        log.info("login: {}:{}",username,password);
+        HttpResult r=new HttpResult();
+        if (userService.checkPassword(username,password)){
+            r.setMsg("success");
         }
         else {
-            r.setHttpStatus(HttpStatus.NON_AUTHORITATIVE_INFORMATION);
-            r.setDescription("用户名或密码错误！");
+            r.setMsg("用户名或密码错误！");
         }
         return r;
     }
     
-    @GetMapping("/userinfo/{userid}")
-//    @PreAuthorize("principal.username.equals(#userid)")
-    public Result userInfo(@PathVariable String userid){
+    @GetMapping("/userinfo/{username}")
+    @PreAuthorize("principal.username.equals(#username)")
+    public HttpResult userInfo(@PathVariable String username){
 //        userService.getUserInfo()
-        Result r=new Result();
-        r.setResult(userService.getUserByUserid(userid));
+        HttpResult r=new HttpResult();
+        r.setResult(userService.getUserByUserid(username));
         return r;
     }
     

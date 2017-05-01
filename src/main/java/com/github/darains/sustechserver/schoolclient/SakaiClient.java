@@ -1,159 +1,291 @@
-package com.github.darains.sustechserver.schoolcas;
+package com.github.darains.sustechserver.schoolclient;
 
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.github.darains.sustechserver.dto.homework.Homework;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.springframework.beans.factory.annotation.Value;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.logging.Level;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @Component("sakaiClient")
 @Slf4j
 public class SakaiClient{
-    @Value("${school.sakai.login.url}")
+
+    //@Value("${school.sakai.login.url}")
     @Setter
-    private String loginUrl;
-    @Value("${school.cas.hosturl}")
+    private String loginUrl = "https://cas.sustc.edu.cn/cas/login?service=http%3A%2F%2Fsakai.sustc.edu.cn%2Fportal%2Flogin";
+
+    //@Value("${school.cas.hosturl}")
     @Setter
-    private String hostUrl;
+    private String hostUrl = "http://weblogin.sustc.edu.cn/";
+    
+    @Setter
+    private String mainPageUrl = "http://sakai.sustc.edu.cn/portal";
+    
+    @Getter
+    private String cookie="";
+    
+    private static final Pattern siteUrlPattern=Pattern.compile("href=\"http://sakai.sustc.edu.cn/portal/site/(.{20,40}) title=\"(.{0,340})\">");
+    
+    private static final Pattern homeworkUrlPattern=Pattern.compile("<a class=\"toolMenuLink \" href=(.{80,280}) title=\"在线发布、提交和批改作业\"");
+    
     
     @SneakyThrows
-    public boolean checkPasswordBySakai(String userid, String password){
-        log.info("check password: {}:{}",userid,password);
-    
-        Connection.Response r1=Jsoup.connect(loginUrl)
-            .header("http.protocol.handle-rediirects","false")
-            .method(Connection.Method.GET).execute();
-        String lt=r1.parse().select("#fm1 > section.row.btn-row > input[type=\"hidden\"]:nth-child(1)").get(0).val();
-        String execution=r1.parse().select("#fm1 > section.row.btn-row > input[type=\"hidden\"]:nth-child(2)").get(0).val();
-        String action=r1.parse().select("#fm1").get(0).attr("action");
-        log.debug("lt:{}",lt);
-        log.debug("excution:{}",execution);
-//        log.info("action:{}",action);
-        String jsession=action.substring(action.indexOf("jsessionid="),action.indexOf("?service"));
-//        log.info("jsession: {}",jsession);
-    
-        Connection.Response r2=Jsoup.connect(hostUrl+action)
-            .method(Connection.Method.POST)
-            .cookie("Cookie",jsession)
-            .followRedirects(false)
-            .data("userid",userid)
+    public String casLogin(String username,String password){
+        
+        Connection.Response r1=Jsoup.connect(loginUrl).execute();
+        
+        String lt=r1.parse().select("#fm1 > section.row.btn-row > input[type=\"hidden\"]:nth-child(1)").first().val();
+        String execution=r1.parse().select("#fm1 > section.row.btn-row > input[type=\"hidden\"]:nth-child(2)").first().val();
+        
+        Connection.Response r2=Jsoup.connect(loginUrl).method(Connection.Method.POST)
+            .header("Referer","https://cas.sustc.edu.cn/cas/login?service=http%3A%2F%2Fjwxt.sustc.edu.cn%2Fjsxsd%2F")
+            .data("username",username)
             .data("password",password)
             .data("lt",lt)
             .data("execution",execution)
             .data("_eventId","submit")
-            .data("submit","LOGIN")
-            .execute();
-
-        log.debug("r2.headers:\n{}",r2.headers());
-        log.debug("r2.cookies:\n{}",r2.cookies());
-        log.debug("r2.location:\n{}\n\n",r2.parse().location());
-        
-        Connection.Response r3=Jsoup.connect(loginUrl)
+            .data("submit","登录")
             .followRedirects(false)
-            .cookies(r2.cookies())
-            .method(Connection.Method.GET)
+            .ignoreHttpErrors(true)
+            .timeout(5000)
             .execute();
-
-        log.debug("r3.headers:\n{}",r3.headers());
-        log.debug("r3 cookies:\n{}",r3.cookies());
-        log.debug("r3.location\n{}\n\n",r3.headers().get("Location"));
         
-        if (r3.header("Location")==null){
-            return false;
-        }
+        //r3
+ 
+        Connection.Response r3=Jsoup.connect(r2.header("Location"))
+            .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36")
+            .header("Upgrade-Insecure-Requests","1")
+            .header("Host","sakai.sustc.edu.cn")
+            .header("Accept-Language","en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4")
+            .followRedirects(false)
+            .execute();
         
-//        Connection.Response r4=Jsoup.connect(r3.headers().get("Location"))
-//            .followRedirects(false)
-//            .cookies(r3.cookies())
-//            .method(Connection.Method.GET)
-//            .execute();
-//        log.info("r4.headers:\n{}",r4.headers());
-//        log.info("r4 cookies:\n{}",r4.cookies());
-//        log.info("r4.location:\n{}\n\n",r4.headers().get("Location"));
-////        log.info("r4.location2\n{}",r4.parse().);
-////        log.info("r4.body:\n{}",r4.parse().data());
-//
-//        String cookie=r4.cookies().toString();
-//        cookie=cookie.substring(1,cookie.length()-1);
-//        Connection.Response r5=Jsoup.connect(r4.headers().get("Location"))
-//            .method(Connection.Method.GET)
-//            .followRedirects(false)
-//            .cookies(r4.cookies())
-//            .header("Cookie",cookie)
-//            .execute();
-//        log.info("r5.headers:\n{}",r5.headers());
-//
-//        log.info("r5 cookies:\n{}",r5.cookies());
-//        log.info("r5.location:\n{}\n\n",r5.headers().get("Location"));
-//
-//        Connection.Response r6=Jsoup.connect(r5.headers().get("Location"))
-//            .method(Connection.Method.GET)
-//            .followRedirects(false)
-//            .header("Cookie",cookie)
-//            .execute();
-//
-//        log.info("r6:\n{}\n\n",r6.parse().data());
-
-        return true;
+        //r4
+        Connection.Response r4=Jsoup.connect(r3.header("Location"))
+            .cookies(r3.cookies())
+            .execute();
+    
+        cookie=r3.cookies().toString();
+        cookie=cookie.substring(1,cookie.length()-1);
+        return cookie;
     }
     
-//    @SneakyThrows
-    public void htmlunitCheckPassword(String userid,String password){
-    
-        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
-        java.util.logging.Logger.getLogger("org.apache.http.client").setLevel(Level.OFF);
-//        LoggerFactory.getLogger(SakaiClient.class)
     
     
-        try (final WebClient webClient = new WebClient()) {
-            final HtmlPage page = webClient.getPage("http://student.sustc.edu.cn/");
-            webClient.getOptions().setCssEnabled(false);//忽略Css
-            webClient.getOptions().setThrowExceptionOnScriptError(false);//如果JavaScript有错误是否抛出，这里的抛出指的是下面获取到的ScriptResult对象为空
-//            webClient.getOptions().
+    public Set<Tuple2> resolveSiteUrls(){
+        return resolveSiteUrls(this.cookie);
+    }
+    
+    @SneakyThrows
+    public Set<Tuple2> resolveSiteUrls(String cookie){
+        Set<Tuple2> ls=new LinkedHashSet<>();
+        Connection.Response mainPage=Jsoup.connect(mainPageUrl)
+            .header("Cookie",cookie)
+            .header("Accept-Language","en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4")
+            .method(Connection.Method.GET).execute();
+    
+        
+        String afterDecoding = StringEscapeUtils.unescapeHtml4(mainPage.body());
+
+        
+        Matcher matcher2 = siteUrlPattern.matcher(afterDecoding);
+        
+        while (matcher2.find()){
+            String s=matcher2.group();
+            String[] ss;
+            ss = s.split("\"");
+            Tuple2<String, String> tuple = Tuple.of(ss[3], ss[1]);
+            ls.add(tuple);
+        }
+        
+        return ls;
+    }
+    
+    @SneakyThrows
+    public List<Homework> resolveHomeworks(String url){
+        return resolveHomeworks(url,this.cookie);
+    }
+    
+    @SneakyThrows
+    public List<Homework> resolveHomeworks(String url,String cookie){
+        
+        Connection.Response r1=Jsoup.connect(url)
+            .header("Cookie",cookie)
+            .header("Accept-Language","en-US,en;q=0.8,zh-CN;q=0.6,zh;q=0.4")
+            .execute();
+    
+        String data=r1.body();
+        
+        String url2=resolveHomeworkUrl(data);
+        
+        
+        List<Homework> ls=new LinkedList<>();
+        
+        
+        if (StringUtils.isBlank(url2)){
+            return ls;
+        }
+        
+        
+//        log.info("url1: {}",url);
+//        log.info("url2: {}",url2);
+        
+        Connection.Response homeworkListPage=Jsoup.connect(url2)
+            .header("Cookie",cookie)
+            .execute();
+    
+//        log.info("reponse's ulr:{}",homeworkListPage.url().toString());
+        
+        Pattern pattern=Pattern.compile("href=\"http://sakai.sustc.edu.cn/portal/(.{20,100})/\\?panel=Main\"");
+        
+        Matcher matcher=pattern.matcher(homeworkListPage.body());
+        
+        if (!matcher.find()){
+            return ls;
+        }
+        
+        String url3=matcher.group();
+        url3=url3.substring(6,url3.length()-1);
+    
+        Connection.Response homeworkList2=Jsoup.connect(url3)
+            .header("Cookie",cookie)
+            .execute();
+        
+        Document document=homeworkList2.parse();
+        
+        for (int i=2;;i++){
             
-            HtmlElement username = page.getFirstByXPath("//*[@id=\"userid\"]");
-            username.click();
-            username.type(userid);
-    
-            HtmlElement pass=page.getFirstByXPath("//*[@id=\"password\"]");
-            pass.click();
-            pass.type(password);
-    
-            HtmlSubmitInput elmt=page.getFirstByXPath("//*[@id=\"fm1\"]/section[3]/input[4]");
-            HtmlPage page2=null;
-            try{
-                page2 = elmt.click();
-                webClient.getOptions().setJavaScriptEnabled(false);
-    
-            } catch(IOException e){
-                e.printStackTrace();
+            String q="body > div > form > table > tbody > tr:nth-child("+(i)+")";
+            
+            //log.info("query string: {}",q);
+            
+            Element e=document.select(q).first();
+            
+            if (e==null){
+                //log.info("{}\nchild {} is null",url2,i);
+                break;
             }
-    
-            log.info("\n\n{}\n\n",page2.getPage().getTitleText());
-            log.info("\n\n{}\n\n",page2.getPage().getBody().asText());
             
-        } catch(MalformedURLException e){
-            e.printStackTrace();
-        } catch(IOException e){
-            e.printStackTrace();
+            //log.info(e.toString());
+        
+            Homework h=resolveHomeworkNode(e);
+            
+            ls.add(h);
         }
+        return ls;
     }
     
+    private Homework resolveHomeworkNode(Element element){
+        
+        Homework h=new Homework();
+        
+        h.setHomeworkName(element.child(1).text());
+        
+        h.setUrl(element.child(1).child(0).child(1).attr("href"));
+        
+        h.setBeginDate(stringToDate(element.child(3).text()));
+        
+        h.setEndDate(stringToDate(element.child(4).text()));
+        
+        h.setStat(element.child(2).text());
+        
+        return h;
+    }
+    
+    public String resolveHomeworkUrl(String body){
+        Matcher matcher=homeworkUrlPattern.matcher(body);
+        if(!matcher.find()){
+            return null;
+        }
+        String ur=null;
+        ur=matcher.group();
+        Pattern pattern=Pattern.compile("href=\"(.*?)\"");
+        Matcher matcher1=pattern.matcher(ur);
+        matcher1.find();
+        ur=matcher1.group().substring(6,matcher1.group().length()-1);
+        return ur;
+    }
+    
+    public LocalDateTime stringToDate(String s){
+        String[] ss=s.split(" ");
+        String s1=ss[0];
+//        s1=s1.replace("上午","AM");
+//        s1=s1.replace("下午","PM");
+        LocalDate date= LocalDate.parse(s1, DateTimeFormatter.ofPattern("yyyy-M-d"));
+        String s2=ss[1];
+        int plusHour=0;
+        if (s2.contains("上午")){
+            s2=s2.replace("上午","");
+        }
+        if (s2.contains("下午")){
+            s2=s2.replace("下午","");
+            plusHour=12;
+        }
+        LocalTime time=LocalTime.parse(s2,DateTimeFormatter.ofPattern("k:mm"));
+        
+        time=time.plusHours(plusHour);
+        
+        LocalDateTime dateTime=LocalDateTime.of(date,time);
+        
+        return dateTime;
+    }
+    
+    
+    public void dateStringTest(){
+        String s="2015-3-5 下午11:00";
+        String[] ss=s.split(" ");
+        String s1=ss[0];
+//        s1=s1.replace("上午","AM");
+//        s1=s1.replace("下午","PM");
+        System.out.println(s1);
+        LocalDate date= LocalDate.parse(s1, DateTimeFormatter.ofPattern("yyyy-M-d"));
+        String s2=ss[1];
+        int plusHour=0;
+        if (s2.contains("上午")){
+            s2=s2.replace("上午","");
+        }
+        if (s2.contains("下午")){
+            s2=s2.replace("下午","");
+            plusHour=12;
+        }
+        LocalTime time=LocalTime.parse(s2,DateTimeFormatter.ofPattern("k:mm"));
+        time=time.plusHours(plusHour);
+    
+        LocalDateTime dateTime=LocalDateTime.of(date,time);
+        System.out.println(date.toString());
+        System.out.println(time.toString());
+        System.out.println(dateTime);
+    }
+
     public static void main(String[] args){
         SakaiClient client=new SakaiClient();
-        client.setLoginUrl("http://weblogin.sustc.edu.cn/cas/login?service=http://sakai.sustc.edu.cn/portal/login");
-        client.setHostUrl("http://weblogin.sustc.edu.cn");
+//        client.dateStringTest();
         
+        String s=client.casLogin("11310388","dengakak");
+        
+        
+
+//        client.testPatten();
     }
 }

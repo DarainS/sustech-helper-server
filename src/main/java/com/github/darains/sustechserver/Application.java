@@ -8,7 +8,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableAsync
 @EnableScheduling
-//@ImportResource("classpath:xml/redis.xml")
 public class Application{
 
 	public static void main(String[] args) {

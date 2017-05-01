@@ -1,4 +1,4 @@
-package com.github.darains.sustechserver.entity.dto.grade;
+package com.github.darains.sustechserver.dto.grade;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

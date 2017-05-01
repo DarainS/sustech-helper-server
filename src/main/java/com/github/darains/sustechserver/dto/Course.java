@@ -1,4 +1,4 @@
-package com.github.darains.sustechserver.entity.dto;
+package com.github.darains.sustechserver.dto;
 
 import lombok.Data;
 

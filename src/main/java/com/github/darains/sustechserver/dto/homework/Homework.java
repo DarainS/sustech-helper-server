@@ -1,4 +1,4 @@
-package com.github.darains.sustechserver.entity.dto.homework;
+package com.github.darains.sustechserver.dto.homework;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
