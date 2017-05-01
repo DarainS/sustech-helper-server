@@ -15,19 +15,19 @@ import org.springframework.test.context.junit4.SpringRunner
 class SakaiClientTest {
 
     @Autowired
-    internal var client: SakaiClient? = null
+    lateinit var client: SakaiClient
 
     @Before
     fun before() {
-        client!!.casLogin("11310388", "dengakak")
+        client.casLogin("11310388", "dengakak")
     }
 
     @Test
     fun resolveHomeworkTest() {
-        val set = client!!.resolveSiteUrls()
+        val set = client.resolveSiteUrls()
         println(set)
         for (s1 in set) {
-            val ls = client!!.resolveHomeworks(s1._2() as String)
+            val ls = client.resolveHomeworks(s1._2() as String)
             val c = CourseHomework()
             c.courseHomework = ls
             c.courseName = s1._1() as String
