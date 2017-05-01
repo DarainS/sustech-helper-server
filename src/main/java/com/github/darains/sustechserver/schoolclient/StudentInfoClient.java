@@ -3,6 +3,7 @@ package com.github.darains.sustechserver.schoolcas;
 import com.github.darains.sustechserver.entity.UserInfo;
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -37,22 +38,21 @@ public class StudentInfoClient{
         String url=r2.url().toString();
         if (r2.url().toString().startsWith("https://student.sustc.edu.cn/?ticket=")){
             ticket=url.substring(url.indexOf("ticket"));
-//            System.out.println(generateUserInfo(ticket));
             return ticket;
         }
         return "";
     }
     
-    
     @SneakyThrows
     public UserInfo generateUserInfo(String ticket){
+        if (StringUtils.isBlank(ticket)){
+            throw new NullPointerException("ticket should not be empty!");
+        }
         UserInfo userInfo = new UserInfo();
         Connection.Response r1=Jsoup.connect("https://student.sustc.edu.cn/cas/login?"+ticket+"&service=https://student.sustc.edu.cn")
             .execute();
         String info=(new Gson().fromJson(r1.body(),Map.class).get("content")).toString();
-    
         JSONObject j = new JSONObject(info);
-    
         userInfo
             .setAccessToken(j.get("access_token").toString())
             .setUserid(j.get("sid").toString())
@@ -63,6 +63,7 @@ public class StudentInfoClient{
     
     public static void main(String[] args){
         StudentInfoClient casClient=new StudentInfoClient();
-        casClient.checkPassword("11310388","dengakak");
+        String s=casClient.checkPassword("11310388","dengakak");
+        System.out.println(casClient.generateUserInfo(s));
     }
 }

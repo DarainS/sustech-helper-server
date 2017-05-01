@@ -27,10 +27,10 @@ public class SakaiClient{
     @Setter
     private String hostUrl;
     
-    
-    
     @SneakyThrows
     public boolean checkPasswordBySakai(String userid, String password){
+        log.info("check password: {}:{}",userid,password);
+    
         Connection.Response r1=Jsoup.connect(loginUrl)
             .header("http.protocol.handle-rediirects","false")
             .method(Connection.Method.GET).execute();
@@ -39,16 +39,15 @@ public class SakaiClient{
         String action=r1.parse().select("#fm1").get(0).attr("action");
         log.debug("lt:{}",lt);
         log.debug("excution:{}",execution);
-        log.info("action:{}",action);
-        
+//        log.info("action:{}",action);
         String jsession=action.substring(action.indexOf("jsessionid="),action.indexOf("?service"));
-        log.info("jsession: {}",jsession);
+//        log.info("jsession: {}",jsession);
     
         Connection.Response r2=Jsoup.connect(hostUrl+action)
             .method(Connection.Method.POST)
             .cookie("Cookie",jsession)
             .followRedirects(false)
-            .data("username",userid)
+            .data("userid",userid)
             .data("password",password)
             .data("lt",lt)
             .data("execution",execution)
@@ -123,7 +122,7 @@ public class SakaiClient{
             webClient.getOptions().setThrowExceptionOnScriptError(false);//如果JavaScript有错误是否抛出，这里的抛出指的是下面获取到的ScriptResult对象为空
 //            webClient.getOptions().
             
-            HtmlElement username = page.getFirstByXPath("//*[@id=\"username\"]");
+            HtmlElement username = page.getFirstByXPath("//*[@id=\"userid\"]");
             username.click();
             username.type(userid);
     
