@@ -15,8 +15,9 @@ src/main/resources/*.yml
 ### IntelliJ IDEA ###
 .idea
 *.iws
-*.iml
+#*.iml
 *.ipr
+logs
 
 ### NetBeans ###
 nbproject/private/
