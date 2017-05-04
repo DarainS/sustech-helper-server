@@ -1,4 +1,4 @@
-package com.github.darains.sustech.student.server.datasource;
+package com.github.darains.sustech.student.server.config.datasource;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;

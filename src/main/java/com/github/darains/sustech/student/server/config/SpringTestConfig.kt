@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component
 
 
 @Component("testConfig")
-public class TestConfig {
+public class SpringTestConfig {
 
     var username="11310388"
     var password="dengakak"

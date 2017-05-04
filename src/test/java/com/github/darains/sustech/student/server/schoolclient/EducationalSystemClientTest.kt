@@ -1,7 +1,7 @@
-package com.github.darains.sustech.student.sustechserver.schoolclient
+package com.github.darains.sustech.student.server.schoolclient
 
-import com.github.darains.sustech.student.server.config.TestConfig
-import com.github.darains.sustech.student.server.schoolclient.EducationalSystemClient
+import com.github.darains.sustech.student.server.config.SpringTestConfig
+import com.github.darains.sustech.student.server.casclient.EducationalSystemClient
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,11 +17,11 @@ class EducationalSystemClientTest {
     lateinit var client: EducationalSystemClient
 
     @Autowired
-    lateinit var config: TestConfig
+    lateinit var configSpring: SpringTestConfig
 
     @Before
     fun before() {
-        client.casLogin(config.username,config.password)
+        client.casLogin(configSpring.username, configSpring.password)
     }
 
     @Test

@@ -73,7 +73,7 @@ public class SecurityConfiguration extends AuthorizationServerConfigurerAdapter 
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/login","/druid/**","/druid","/").permitAll()
+                .antMatchers("/login","/druid/**","/druid","/","/api/**").permitAll()
                 .anyRequest().authenticated();
         }
     }

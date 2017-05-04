@@ -10,5 +10,5 @@ import java.util.Set;
 public class SakaiHomework{
     String studentid;
     String cookie;
-    Set<CourseHomework> homework;
+    Set<CourseHomework> courseHomeworks;
 }

@@ -1,6 +1,6 @@
-package com.github.darains.sustech.student.server.schoolclient;
+package com.github.darains.sustech.student.server.casclient;
 
-import com.github.darains.sustech.student.server.dto.Course;
+import com.github.darains.sustech.student.server.dto.course.Course;
 import com.github.darains.sustech.student.server.dto.grade.Grade;
 import com.github.darains.sustech.student.server.dto.grade.TermGrade;
 import com.github.darains.sustech.student.server.dto.grade.StudentAllTermGrade;
@@ -19,7 +19,7 @@ import java.util.*;
 
 @Component
 @Slf4j
-public final class EducationalSystemClient{
+public final class EducationalSystemClient implements CasClient{
     
     static final String URL = "http://jwxt.sustc.edu.cn/jsxsd/";
     
@@ -35,6 +35,8 @@ public final class EducationalSystemClient{
     @Getter
     private String cookie;
     
+    
+    @Override
     @SneakyThrows
     public String casLogin(String username,String password){
         
@@ -177,7 +179,7 @@ public final class EducationalSystemClient{
     }
     
     
-    public static void CourseGradeTest(){
+    private static void CourseGradeTest(){
         EducationalSystemClient client=new EducationalSystemClient();
         client.casLogin("11310388","dengakak");
     

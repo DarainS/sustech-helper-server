@@ -9,5 +9,5 @@ import java.util.List;
 @Accessors(chain = true)
 public class CourseHomework{
     String courseName;
-    List<Homework> courseHomework;
+    List<Homework> homeworks;
 }

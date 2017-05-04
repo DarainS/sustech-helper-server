@@ -4,9 +4,9 @@ import com.github.darains.sustech.student.server.entity.UserInfo;
 import com.github.darains.sustech.student.server.repository.UserRepository;
 import com.github.darains.sustech.student.server.entity.CustomUserDetails;
 import com.github.darains.sustech.student.server.entity.User;
-import com.github.darains.sustech.student.server.schoolclient.EducationalSystemClient;
-import com.github.darains.sustech.student.server.schoolclient.SakaiClient;
-import com.github.darains.sustech.student.server.schoolclient.StudentInfoClient;
+import com.github.darains.sustech.student.server.casclient.EducationalSystemClient;
+import com.github.darains.sustech.student.server.casclient.SakaiClient;
+import com.github.darains.sustech.student.server.casclient.StudentInfoClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("userService")
 @Slf4j
 public class UserServiceImpl implements UserDetailsService,UserService{
+    
     @Autowired
     private EducationalSystemClient educationalSystemClient;
     @Autowired
@@ -35,11 +36,8 @@ public class UserServiceImpl implements UserDetailsService,UserService{
     }
     
     public UserInfo getUserInfo(String userid, String password){
-        String ticket=studentInfoClient.checkPassword(userid,password);
-        if (StringUtils.isBlank(ticket)){
-            return null;
-        }
-        return studentInfoClient.generateUserInfo(ticket);
+       
+        return studentInfoClient.getUserInfo(userid, password);
     }
     
     public boolean checkPassword(String id,String password){
@@ -68,6 +66,7 @@ public class UserServiceImpl implements UserDetailsService,UserService{
     
     @Override
     public UserDetails loadUserByUsername(String userid) throws UsernameNotFoundException {
+        
         User user = userRepository.getUserByUserid(userid);
         
         if (user == null) {

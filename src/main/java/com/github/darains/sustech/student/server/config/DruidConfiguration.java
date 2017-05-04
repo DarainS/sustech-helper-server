@@ -116,6 +116,14 @@ public class DruidConfiguration{
     }
     */
     
+//    @Bean
+//    public SqlSessionFactory sqlSessionFactory() throws Exception{
+//        SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
+//        sqlSessionFactoryBean.setDataSource(druidDataSource());
+//        sqlSessionFactoryBean.setMapperLocations(new Resource[1]);
+//        return sqlSessionFactoryBean.getObject();
+//    }
+    
     @Bean
     public PlatformTransactionManager transactionManager() throws SQLException{
         return new DataSourceTransactionManager(druidDataSource());

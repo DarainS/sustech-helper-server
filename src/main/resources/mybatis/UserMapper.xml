@@ -15,6 +15,7 @@
           (#{id}, #{userid}, #{password})
     </insert>
 
+
     <update id="updateUserOnPasswordById">
         UPDATE
           user

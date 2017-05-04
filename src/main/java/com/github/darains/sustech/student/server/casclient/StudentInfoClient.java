@@ -1,4 +1,4 @@
-package com.github.darains.sustech.student.server.schoolclient;
+package com.github.darains.sustech.student.server.casclient;
 
 import com.github.darains.sustech.student.server.entity.UserInfo;
 import com.google.gson.Gson;
@@ -12,13 +12,13 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 @Component("studentInfoClient")
-public class StudentInfoClient{
-    
+public class StudentInfoClient implements CasClient{
     
     private String ticket;
     
+    @Override
     @SneakyThrows
-    public String checkPassword(String userid,String password){
+    public String casLogin(String userid, String password){
         Connection.Response r1=Jsoup.connect("https://cas.sustc.edu.cn/cas/login?service=https://student.sustc.edu.cn/")
             .followRedirects(false)
             .execute();
@@ -43,7 +43,7 @@ public class StudentInfoClient{
     }
     
     @SneakyThrows
-    public UserInfo generateUserInfo(String ticket){
+    private UserInfo generateUserInfo(String ticket){
         if (StringUtils.isBlank(ticket)){
             throw new NullPointerException("ticket should not be empty!");
         }
@@ -60,9 +60,14 @@ public class StudentInfoClient{
         return userInfo;
     }
     
+    public UserInfo getUserInfo(String userid,String password){
+        casLogin(userid, password);
+        return generateUserInfo(this.ticket);
+    }
+    
     public static void main(String[] args){
         StudentInfoClient casClient=new StudentInfoClient();
-        String s=casClient.checkPassword("11310388","dengakak");
+        String s=casClient.casLogin("11310388","dengakak");
         System.out.println(casClient.generateUserInfo(s));
     }
 }

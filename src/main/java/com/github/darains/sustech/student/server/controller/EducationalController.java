@@ -23,7 +23,7 @@ public class EducationalController{
             .getPrincipal();
         try{
             result
-                .setResult(educationalService.resolveCourseTable(principal.getUsername(), principal.getPassword()))
+                .setResult(educationalService.getStudentCourseTable(principal.getUsername(), principal.getPassword()))
                 .setCode(200);
         }
         catch(Exception e){

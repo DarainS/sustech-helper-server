@@ -1,4 +1,4 @@
-package com.github.darains.sustech.student.sustechserver;
+package com.github.darains.sustech.student.server;
 
 import com.github.darains.sustech.student.server.entity.User;
 import com.github.darains.sustech.student.server.repository.UserRepository;
@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = UserRepository.class)
 public class ApplicationTest{
 
     @Autowired

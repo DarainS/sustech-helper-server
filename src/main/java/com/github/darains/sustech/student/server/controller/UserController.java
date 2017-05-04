@@ -37,11 +37,11 @@ public class UserController{
     @GetMapping("/sakai/homework")
     public HttpResult sakaiHomeworkds(){
         UserDetails principal= (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        log.info("user {} access /sakai/homework ",principal.getUsername());
+        log.info("user {} access /sakai/courseHomeworks ",principal.getUsername());
         HttpResult result=new HttpResult();
         
-        result.setResult(sakaiService.sakaiHomework());
-    
+        result.setResult(sakaiService.getAllHomeworks(principal.getUsername(),principal.getPassword()));
+        
         return result;
     }
     

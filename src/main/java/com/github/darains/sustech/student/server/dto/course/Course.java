@@ -1,4 +1,4 @@
-package com.github.darains.sustech.student.server.dto;
+package com.github.darains.sustech.student.server.dto.course;
 
 import lombok.Data;
 

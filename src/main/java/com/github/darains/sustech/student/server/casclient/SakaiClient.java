@@ -1,4 +1,4 @@
-package com.github.darains.sustech.student.server.schoolclient;
+package com.github.darains.sustech.student.server.casclient;
 
 import com.github.darains.sustech.student.server.dto.homework.CourseHomework;
 import com.github.darains.sustech.student.server.dto.homework.Homework;
@@ -15,6 +15,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,9 +26,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-@Component("sakaiClient")
+@Component(value = "sakaiClient")
+@Service
 @Slf4j
-public class SakaiClient{
+public class SakaiClient implements CasClient{
 
     //@Value("${school.sakai.login.url}")
     private String loginUrl = "https://cas.sustc.edu.cn/cas/login?service=http%3A%2F%2Fsakai.sustc.edu.cn%2Fportal%2Flogin";
@@ -45,7 +47,7 @@ public class SakaiClient{
     
     private static final Pattern homeworkUrlPattern=Pattern.compile("<a class=\"toolMenuLink \" href=(.{80,280}) title=\"在线发布、提交和批改作业\"");
     
-    
+    @Override
     @SneakyThrows
     public String casLogin(String username,String password){
         
@@ -119,12 +121,12 @@ public class SakaiClient{
     }
     
     @SneakyThrows
-    public List<Homework> resolveHomeworks(String url){
+    private List<Homework> resolveHomeworks(String url){
         return resolveHomeworks(url,this.cookie);
     }
     
     @SneakyThrows
-    public List<Homework> resolveHomeworks(String url,String cookie){
+    private List<Homework> resolveHomeworks(String url,String cookie){
         
         Connection.Response r1=Jsoup.connect(url)
             .header("Cookie",cookie)
@@ -248,7 +250,7 @@ public class SakaiClient{
     }
     
     
-    public void dateStringTest(){
+    private void dateStringTest(){
         String s="2015-3-5 下午11:00";
         String[] ss=s.split(" ");
         String s1=ss[0];
@@ -275,7 +277,7 @@ public class SakaiClient{
     }
     
     
-    public Set<CourseHomework> allHomeworks(String cookie){
+    public Set<CourseHomework> allHomeworks(){
     
         Set<CourseHomework> result=new HashSet<>();
         
@@ -290,14 +292,19 @@ public class SakaiClient{
             CourseHomework c=new CourseHomework();
             List<Homework> ls=resolveHomeworks((String)s1._2());
             c.setCourseName((String)s1._1());
-            c.setCourseHomework(ls);
-            if (c.getCourseHomework().size()>0){
+            c.setHomeworks(ls);
+            if (c.getHomeworks().size()>0){
                 result.add(c);
             }
         }
         
         return result;
         
+    }
+    
+    public Set<CourseHomework> allHomeworks(String userid,String password){
+        this.casLogin(userid,password);
+        return allHomeworks();
     }
     
     public static void main(String[] args){
