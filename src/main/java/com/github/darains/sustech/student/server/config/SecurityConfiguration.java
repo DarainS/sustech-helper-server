@@ -3,10 +3,13 @@ package com.github.darains.sustech.student.server.config;
 import com.github.darains.sustech.student.server.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -91,11 +94,24 @@ public class SecurityConfiguration extends AuthorizationServerConfigurerAdapter 
     public TokenStore tokenStore() {
         return new RedisTokenStore(jedisConnectionFactory());
     }
-
+    
     @Bean
     @ConfigurationProperties(prefix="spring.redis")
     public JedisConnectionFactory jedisConnectionFactory(){
         return new JedisConnectionFactory();
+    }
+    
+    @Bean
+    RedisTemplate<Object, Object> redisTemplate() {
+        RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<Object, Object>();
+        redisTemplate.setConnectionFactory(jedisConnectionFactory());
+        return redisTemplate;
+    }
+    
+    @Bean
+    public CacheManager cacheManager() {
+        RedisCacheManager cacheManager = new RedisCacheManager(redisTemplate());
+        return cacheManager;
     }
     
     @Bean

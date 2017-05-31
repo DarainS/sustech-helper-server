@@ -1,5 +1,6 @@
 package com.github.darains.sustech.student.server.controller;
 
+import com.github.darains.sustech.student.server.dto.homework.SakaiHomework;
 import com.github.darains.sustech.student.server.service.UserService;
 import com.github.darains.sustech.student.server.dto.HttpResult;
 import com.github.darains.sustech.student.server.service.SakaiService;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -35,12 +37,19 @@ public class UserController{
     }
     
     @GetMapping("/sakai/homework")
-    public HttpResult sakaiHomeworkds(){
+    public HttpResult sakaiHomeworkds(@RequestParam(defaultValue = "false")String refresh){
         UserDetails principal= (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        log.info("user {} access /sakai/courseHomeworks ",principal.getUsername());
+
         HttpResult result=new HttpResult();
+        SakaiHomework homework;
         
-        result.setResult(sakaiService.getAllHomeworks(principal.getUsername(),principal.getPassword()));
+        if (("false".equals(refresh))){
+            homework=sakaiService.getCachedSakaiHomework(principal.getUsername(),principal.getPassword());
+        }else {
+            homework=sakaiService.getRefreshedSakaiHomework(principal.getUsername(),principal.getPassword());
+        }
+    
+        result.setResult(homework);
         
         return result;
     }

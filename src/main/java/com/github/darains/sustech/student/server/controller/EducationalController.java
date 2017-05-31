@@ -1,5 +1,6 @@
 package com.github.darains.sustech.student.server.controller;
 
+import com.github.darains.sustech.student.server.dto.grade.StudentAllTermGrade;
 import com.github.darains.sustech.student.server.service.EducationalSystemService;
 import com.github.darains.sustech.student.server.dto.HttpResult;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -17,13 +19,13 @@ public class EducationalController{
     EducationalSystemService educationalService;
     
     @GetMapping("/user/course")
-    public HttpResult getCourseTable(){
+    public HttpResult getCourseTable(@RequestParam(defaultValue = "false") boolean refresh){
         HttpResult result=new HttpResult();
         UserDetails principal= (UserDetails) SecurityContextHolder.getContext().getAuthentication()
             .getPrincipal();
         try{
             result
-                .setResult(educationalService.getStudentCourseTable(principal.getUsername(), principal.getPassword()))
+                .setResult(educationalService.getCachedStudentCourseTable(principal.getUsername(), principal.getPassword()))
                 .setCode(200);
         }
         catch(Exception e){
@@ -35,20 +37,28 @@ public class EducationalController{
     }
     
     @GetMapping("/user/grade/all")
-    public HttpResult allStudentGrades(){
+    public HttpResult allStudentGrades(@RequestParam(defaultValue = "false") boolean refresh){
         UserDetails principal= (UserDetails) SecurityContextHolder.getContext().getAuthentication()
             .getPrincipal();
         HttpResult result=new HttpResult();
+        
         try{
+            StudentAllTermGrade grade;
+            if (refresh){
+                grade=educationalService.getRefreshedStudentAllTermGrade(principal.getUsername(), principal.getPassword());
+            }else {
+                grade=educationalService.getCachedStudentAllTermGrade(principal.getUsername(), principal.getPassword());
+            }
+            grade.setStudentid(principal.getUsername());
             result
-                .setResult(educationalService.resolveStudentAllTermGrade(principal.getUsername(), principal.getPassword()))
+                .setResult(grade)
                 .setCode(200);
         }
         catch(Exception e){
             log.warn(e.getMessage());
             e.printStackTrace();
             result.setCode(402)
-                .setMsg(HttpResult.UNKNOWN_ERROR);
+                .setMsg(e.getMessage());
         }
         return result;
     }

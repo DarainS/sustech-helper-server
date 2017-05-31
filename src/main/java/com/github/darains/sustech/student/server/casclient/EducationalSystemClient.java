@@ -77,13 +77,9 @@ public final class EducationalSystemClient implements CasClient{
             for (int i=1;i<=6;i++){
                 for (int w = 1; w <= 7; w++){
                     String t1="#kbtable > tbody > tr:nth-child("+(i+1)+") > td:nth-child("+(w+1)+")";
-//                    System.out.println(t1);
                     Element e=r3.parse().select(t1).first();
-//                    System.out.println(e.children());
                     String s=e.child(3).html().trim().replace("&nbsp;","").trim();
                     if (StringUtils.isNotBlank(s)){
-//                        System.out.println("w:"+w+" i:"+i);
-//                        System.out.println(s);
                         try{
                             set.add(resolveHtmlToCourse(w, i, s));
                         }

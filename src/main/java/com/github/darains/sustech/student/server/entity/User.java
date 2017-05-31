@@ -16,12 +16,16 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class User implements Serializable {
+public class User implements Serializable,CacheKey {
 
     private static final long serialVersionUID = 7698862379923111158L;
 
     private Long id;
     private String userid;
     private String password;
-
+    
+    @Override
+    public String cacheKey(){
+        return userid;
+    }
 }

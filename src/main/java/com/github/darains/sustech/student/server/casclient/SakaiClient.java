@@ -292,8 +292,8 @@ public class SakaiClient implements CasClient{
             CourseHomework c=new CourseHomework();
             List<Homework> ls=resolveHomeworks((String)s1._2());
             c.setCourseName((String)s1._1());
-            c.setHomeworks(ls);
-            if (c.getHomeworks().size()>0){
+            c.setCourseHomework(ls);
+            if (c.getCourseHomework().size()>0){
                 result.add(c);
             }
         }
