@@ -27,3 +27,5 @@ dist/
 nbdist/
 .nb-gradle/
 
+/src/main/java/com/github/darains/sustech/student/server/config/SpringTestConfig.kt
+/src/test/
