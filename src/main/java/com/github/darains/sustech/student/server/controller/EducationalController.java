@@ -18,7 +18,7 @@ public class EducationalController{
     @Autowired
     EducationalSystemService educationalService;
     
-    @GetMapping("/user/course")
+    @GetMapping("/user/courseTable")
     public HttpResult getCourseTable(@RequestParam(defaultValue = "false") boolean refresh){
         HttpResult result=new HttpResult();
         UserDetails principal= (UserDetails) SecurityContextHolder.getContext().getAuthentication()
@@ -36,7 +36,7 @@ public class EducationalController{
         return result;
     }
     
-    @GetMapping("/user/grade/all")
+    @GetMapping("/user/grade")
     public HttpResult allStudentGrades(@RequestParam(defaultValue = "false") boolean refresh){
         UserDetails principal= (UserDetails) SecurityContextHolder.getContext().getAuthentication()
             .getPrincipal();

@@ -18,20 +18,20 @@ class SakaiApi {
     @Autowired
     lateinit var eduService:EducationalSystemService
 
-    @PostMapping("/homework")
+    @PostMapping("/sakai/homework")
     fun studentAllHomeworks(@RequestParam @NotNull  username:String, @RequestParam @NotNull password:String ):HttpResult{
         var s=sakaiService.getCachedSakaiHomework(username,password)
         var result=HttpResult.success(s)
         return result
     }
 
-    @PostMapping("/grade")
+    @PostMapping("/user/grade")
     fun allGrades(@RequestParam @NotNull userid:String,@RequestParam @NotNull password: String): HttpResult {
         var grade=eduService.getCachedStudentAllTermGrade(userid, password)
         return HttpResult.success(grade)
     }
 
-    @PostMapping("/courseTable")
+    @PostMapping("/user/courseTable")
     fun courseTable(@RequestParam @NotNull userid:String,@RequestParam @NotNull password: String): HttpResult {
         var table=eduService.getCachedStudentCourseTable(userid, password)
         return HttpResult.success(table)
