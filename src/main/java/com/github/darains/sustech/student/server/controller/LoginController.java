@@ -16,9 +16,15 @@ public class LoginController{
     @Autowired
     UserServiceImpl userService;
     
+    /**
+     *
+     * @param username 用户的SID
+     * @param password 用户的SID的登录密码
+     * @return 返回用户登录成功与否
+     */
     @PostMapping(value = "/login")
     public Object login(@RequestParam @NotNull String username, @RequestParam @NotNull String password){
-        log.info("login: {}:{}",username,password);
+        log.info("login: {}",username);
         HttpResult r=new HttpResult();
         if (userService.checkPassword(username,password)){
             r.setMsg("success");
@@ -32,7 +38,7 @@ public class LoginController{
     @GetMapping("/userinfo/{username}")
     @PreAuthorize("principal.username.equals(#username)")
     public HttpResult userInfo(@PathVariable String username){
-//        userService.getUserInfo()
+        String s;
         HttpResult r=new HttpResult();
         r.setResult(userService.getUserByUserid(username));
         return r;

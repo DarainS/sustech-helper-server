@@ -16,15 +16,28 @@ public class EducationalSystemService{
     
     //course table
     
+    /**
+     * 从缓存读取数据
+     * @param userid
+     * @param password
+     * @return 学生的课表信息
+     */
     @Cacheable(value = "courseTable",key = "'courseTable_'+#p0")
     public CourseTable getCachedStudentCourseTable(String userid, String password){
         return getStudentCourseTable(userid, password);
     }
     
+    /**
+     * 爬取数据并存入缓存
+     * @param userid
+     * @param password
+     * @return 学生的课表信息
+     */
     @CachePut(value = "courseTable",key = "'courseTable_'+#p0")
     public CourseTable getRefreshedStudentCourseTable(String userid, String password){
         return getStudentCourseTable(userid, password);
     }
+    
     
     private CourseTable getStudentCourseTable(String userid, String password){
         String cookie=educationalSystemClient.casLogin(userid,password);

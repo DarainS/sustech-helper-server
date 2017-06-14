@@ -15,7 +15,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,7 +26,6 @@ import java.util.regex.Pattern;
 
 
 @Component(value = "sakaiClient")
-@Service
 @Slf4j
 public class SakaiClient implements CasClient{
 
@@ -277,6 +275,10 @@ public class SakaiClient implements CasClient{
     }
     
     
+    
+    /**
+     * @return 返回学生在sakai站点加入的所有站点的作业,按课程排列
+     */
     public Set<CourseHomework> allHomeworks(){
     
         Set<CourseHomework> result=new HashSet<>();
@@ -302,17 +304,9 @@ public class SakaiClient implements CasClient{
         
     }
     
-    public Set<CourseHomework> allHomeworks(String userid,String password){
+    private Set<CourseHomework> allHomeworks(String userid,String password){
         this.casLogin(userid,password);
         return allHomeworks();
     }
     
-    public static void main(String[] args){
-        SakaiClient client=new SakaiClient();
-//        client.dateStringTest();
-
-        
-
-//        client.testPatten();
-    }
 }

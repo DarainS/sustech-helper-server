@@ -9,7 +9,9 @@ import java.util.Set;
 @Data
 @Accessors(chain = true)
 public class CourseTable implements CacheKey{
+    
     private String studentid;
+    
     private Set<Course> courses;
     
     @Override

@@ -15,11 +15,23 @@ public class SakaiService{
     @Autowired
     private SakaiClient sakaiClient;
     
+    /**
+     * 优先从缓存读取数据
+     * @param userid
+     * @param password
+     * @return 返回学生的sakai作业信息,按课程排列
+     */
     @Cacheable(value = "homework",  key = "'homework_'+#p0")
     public SakaiHomework getCachedSakaiHomework(String userid,String password){
         return getAllHomeworks(userid, password);
     }
     
+    /**
+     * 直接爬取数据,并存入缓存
+     * @param userid
+     * @param password
+     * @return 返回学生的sakai作业信息,按课程排列
+     */
     @CachePut(value = "homework", key = "'homework_'+#p0")
     public SakaiHomework getRefreshedSakaiHomework(String userid,String password){
         return getAllHomeworks(userid, password);

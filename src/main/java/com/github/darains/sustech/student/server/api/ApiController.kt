@@ -9,8 +9,13 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import javax.validation.constraints.NotNull
 
+
+/*
+*   @auther
+ */
+
 @RestController("/api")
-class SakaiApi {
+class ApiController {
 
     @Autowired
     lateinit var sakaiService: SakaiService

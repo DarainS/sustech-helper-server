@@ -28,9 +28,8 @@ import org.springframework.security.oauth2.provider.token.store.redis.RedisToken
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author Xiaoyue Xiao
+ * 此类为spring-security框架的配置类,大部分权限配置在此类完成
  */
-
 @Configuration
 @EnableAuthorizationServer
 @EnableResourceServer

@@ -26,4 +26,9 @@ public class ApplicationTest{
         User user=userRepository.getUserByUserid("shawn");
         Assert.assertNotNull(user);
     }
+    @Test
+    public void ff(){
+        Assert.assertNotNull(userRepository.getUserByUserid("11310388"));
+    }
+    
 }

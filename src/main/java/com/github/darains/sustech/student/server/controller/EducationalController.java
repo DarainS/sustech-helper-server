@@ -18,6 +18,12 @@ public class EducationalController{
     @Autowired
     EducationalSystemService educationalService;
     
+    
+    /**
+     *
+     * @param refresh 是否需要刷新缓存
+     * @return 返回学生的所有课程的上课时间,地点等
+     */
     @GetMapping("/user/courseTable")
     public HttpResult getCourseTable(@RequestParam(defaultValue = "false") boolean refresh){
         HttpResult result=new HttpResult();
@@ -36,6 +42,11 @@ public class EducationalController{
         return result;
     }
     
+    /**
+     *
+     * @param refresh 是否需要刷新缓存
+     * @return 返回学生的所有成绩,按学期排列
+     */
     @GetMapping("/user/grade")
     public HttpResult allStudentGrades(@RequestParam(defaultValue = "false") boolean refresh){
         UserDetails principal= (UserDetails) SecurityContextHolder.getContext().getAuthentication()

@@ -68,6 +68,10 @@ public final class EducationalSystemClient implements CasClient{
         return cookie;
     }
     
+    
+    /*
+     * 传入cookie，此方法将爬取课程信息中的所有课程的列表
+     */
     public Set<Course> crawlCourseTable(String cookie){
         Set<Course> set=new HashSet<>();
         try{
@@ -115,6 +119,10 @@ public final class EducationalSystemClient implements CasClient{
         return course;
     }
     
+    /*
+     * @param 需传入cookie信息
+     * @return 返回学生的所有学期的成绩,按学期排列
+     */
     public StudentAllTermGrade crawlStudentAllTermGrades(String cookie){
         StudentAllTermGrade studentGrades=new StudentAllTermGrade();
         for(String name:termNameList){
@@ -132,6 +140,9 @@ public final class EducationalSystemClient implements CasClient{
         return studentGrades;
     }
     
+    /*
+     * @return 返回学生的所有学期的成绩,按学期排列
+     */
     public StudentAllTermGrade crawlStudentAllTermGrades(){
         return crawlStudentAllTermGrades(this.cookie);
     }
@@ -188,8 +199,5 @@ public final class EducationalSystemClient implements CasClient{
         System.out.println(s);
     }
     
-    public static void main(String[] args) throws IOException{
-        
     
-    }
 }

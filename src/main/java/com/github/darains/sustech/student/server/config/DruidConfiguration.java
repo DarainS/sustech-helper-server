@@ -24,9 +24,11 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 此类为druid框架的配置类,包含必要的配置信息
+ **/
 @Aspect
 @EnableAspectJAutoProxy
-
 @Configuration
 public class DruidConfiguration{
     

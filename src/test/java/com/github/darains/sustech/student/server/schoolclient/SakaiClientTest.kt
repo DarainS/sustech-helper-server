@@ -1,7 +1,7 @@
 package com.github.darains.sustech.student.server.schoolclient
 
-import com.github.darains.sustech.student.server.config.SpringTestConfig
 import com.github.darains.sustech.student.server.casclient.SakaiClient
+import com.github.darains.sustech.student.server.config.SpringTestConfig
 import com.github.darains.sustech.student.server.service.SakaiService
 import jdk.nashorn.internal.runtime.regexp.joni.Config.log
 import lombok.extern.slf4j.Slf4j
@@ -13,6 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 
+
+/**
+ * SakaiClient的测试类
+ */
 @RunWith(SpringRunner::class)
 @SpringBootTest
 @Slf4j
@@ -25,11 +29,12 @@ class SakaiClientTest {
     lateinit var service: SakaiService
 
     @Autowired
-    lateinit var configSpring: SpringTestConfig
+    lateinit var config: SpringTestConfig
 
     @Before
     fun before() {
-        client.casLogin(configSpring.username, configSpring.password)
+        client.casLogin(config.username, config.password)
+        Assert.assertTrue(client.cookie.isNotEmpty())
     }
 
     @Test
@@ -39,10 +44,10 @@ class SakaiClientTest {
             var t1=System.currentTimeMillis()
 
             if (i%2==1) {
-                var h = service.getCachedSakaiHomework("11310388", "dengakak")
+                var h = service.getCachedSakaiHomework(config.username,config.password)
             }
             else{
-                var h = service.getRefreshedSakaiHomework("11310388", "dengakak")
+                var h = service.getRefreshedSakaiHomework(config.username,config.password)
             }
 
             var t2 = System.currentTimeMillis()

@@ -36,7 +36,6 @@ public class UserServiceImpl implements UserDetailsService,UserService{
     }
     
     public UserInfo getUserInfo(String userid, String password){
-       
         return studentInfoClient.getUserInfo(userid, password);
     }
     
@@ -64,6 +63,12 @@ public class UserServiceImpl implements UserDetailsService,UserService{
     }
     
     
+    /**
+     *
+     * @param userid
+     * @return 用来做spring-security框架的权限控制
+     * @throws UsernameNotFoundException
+     */
     @Override
     public UserDetails loadUserByUsername(String userid) throws UsernameNotFoundException {
         

@@ -15,6 +15,10 @@ import javax.sql.DataSource;
 
 //@Configuration
 //@MapperScan(basePackages = "#{project.basepackage}.model.school", sqlSessionTemplateRef  = "test1SqlSessionTemplate")
+
+/*
+ 此类用来配置数据源信息,一般不要修改
+ */
 public class School {
     
     @Bean(name = "test1DataSource")

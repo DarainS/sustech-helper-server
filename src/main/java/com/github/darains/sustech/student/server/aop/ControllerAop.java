@@ -13,6 +13,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
+
+
 @Aspect
 @Component
 @Slf4j
@@ -23,6 +25,11 @@ public class ControllerAop{
     
     }
     
+    /**
+     * 对所有用户的controller层访问请求进行日志记录
+     * @param joinPoint
+     * @throws Throwable
+     */
     @Before("mm()")
     public void before(JoinPoint joinPoint) throws Throwable{
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();

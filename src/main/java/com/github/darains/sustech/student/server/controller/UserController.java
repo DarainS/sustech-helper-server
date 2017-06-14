@@ -21,6 +21,10 @@ public class UserController{
     @Autowired
     private SakaiService sakaiService;
     
+    /**
+     *
+     * @return 返回学生的个人信息,如学号,姓名等
+     */
     @GetMapping("/user/info")
     public HttpResult userInfo(){
         HttpResult result=new HttpResult();
@@ -36,6 +40,11 @@ public class UserController{
         return result;
     }
     
+    /**
+     *
+     * @param refresh 是否需要刷新缓存
+     * @return 返回学生在sakai系统的所有加入站点的作业信息,按课程排列
+     */
     @GetMapping("/sakai/homework")
     public HttpResult sakaiHomeworkds(@RequestParam(defaultValue = "false")String refresh){
         UserDetails principal= (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
