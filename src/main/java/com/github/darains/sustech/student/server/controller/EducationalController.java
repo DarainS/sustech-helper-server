@@ -1,5 +1,6 @@
 package com.github.darains.sustech.student.server.controller;
 
+import com.github.darains.sustech.student.server.dto.course.CourseTable;
 import com.github.darains.sustech.student.server.dto.grade.StudentAllTermGrade;
 import com.github.darains.sustech.student.server.service.EducationalSystemService;
 import com.github.darains.sustech.student.server.dto.HttpResult;
@@ -30,8 +31,15 @@ public class EducationalController{
         UserDetails principal= (UserDetails) SecurityContextHolder.getContext().getAuthentication()
             .getPrincipal();
         try{
+            CourseTable s;
+            if (refresh)
+                s = educationalService.getRefreshedStudentCourseTable(principal.getUsername(), principal
+                .getPassword());
+            else
+                s=educationalService.getCachedStudentCourseTable(principal.getUsername(),principal.getPassword());
+            
             result
-                .setResult(educationalService.getCachedStudentCourseTable(principal.getUsername(), principal.getPassword()))
+                .setResult(s)
                 .setCode(200);
         }
         catch(Exception e){

@@ -11,13 +11,13 @@
           <option name="jvmTarget" value="1.6" />
           <option name="languageVersion" value="1.1" />
           <option name="apiVersion" value="1.1" />
+          <option name="pluginOptions">
+            <array />
+          </option>
           <option name="pluginClasspaths">
             <array />
           </option>
           <option name="coroutinesWarn" value="true" />
-          <option name="pluginOptions">
-            <array />
-          </option>
         </compilerArguments>
       </configuration>
     </facet>
@@ -68,6 +68,8 @@
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-web:4.2.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:4.3.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:5.1.40" level="project" />
+    <orderEntry type="library" name="Maven: de.codecentric:spring-boot-admin-server:1.5.3" level="project" />
+    <orderEntry type="library" name="Maven: de.codecentric:spring-boot-admin-server-ui:1.5.3" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-web:1.5.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-tomcat:1.5.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tomcat.embed:tomcat-embed-core:8.5.11" level="project" />

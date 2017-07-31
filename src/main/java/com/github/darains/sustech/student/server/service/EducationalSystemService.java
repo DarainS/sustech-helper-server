@@ -38,11 +38,20 @@ public class EducationalSystemService{
         return getStudentCourseTable(userid, password);
     }
     
+    public CourseTable getStudentCourseTable(String userid,String password,boolean refresh){
+        if (refresh){
+            return getRefreshedStudentCourseTable(userid, password);
+        }
+        
+        return getCachedStudentCourseTable(userid, password);
+    }
     
     private CourseTable getStudentCourseTable(String userid, String password){
         String cookie=educationalSystemClient.casLogin(userid,password);
         return new CourseTable().setStudentid(userid).setCourses(educationalSystemClient.crawlCourseTable(cookie));
     }
+    
+    
     
     //grade
     
