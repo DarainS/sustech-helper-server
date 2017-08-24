@@ -1,285 +1,240 @@
-### 基于Spring-boot的学生助手后端服务及其React-Native前端APP的开发
+# 基于Spring-boot的学生助手后端服务及其React-Native前端APP的开发
 
 
 
-Members（totally 1）：
+## 简介
 
-邓收港 11310388
+为解决学生的一些常见问题，服务学生，开发了以下学生常用功能的后端服务：课表查询、sakai作业查询、考试成绩查询。
+
+为展示以上功能，完成了iOS与Android双平台APP的开发。
+
+项目地址：
+
+https://gitlab.com/Darain/sustech-helper
+
+https://gitlab.com/Darain/sustech-helper-server
+
+## 需求分析
+
+- 登录模块
+  - 前端进行登录信息格式验证
+  - 后端通过登录信息确认权限信息，并返回token
+  - 前端成功获取token后，进入APP主界面，登陆后方可使用以下若干功能
+- 学生查询课表
+  - 登陆后方可使用此功能
+  - 前端发送相应请求及token信息，后端验证token权限后返回学生课表数据，具体格式数据参见《API说明.pdf》
+  - 后端优先返回存储在redis中缓存数据
+- 查看sakai系统作业
+  - 登陆后方可使用此功能
+  - 前端发送相应请求及token信息，后端验证token权限后返回学生在sakai系统所加入的所有站点的课程作业信息，按课程分组，具体格式数据参见《API说明.pdf》
+  - 后端优先返回存储在redis中缓存数据
+- 查看考试成绩
+  - 登陆后方可使用此功能
+  - 前端发送相应请求及token信息，后端验证token权限后返回学生所有学期的所有课程成绩，成绩按学期排列，具体格式数据参见《API说明.pdf》
+  - 后端优先返回存储在redis中缓存数据
+
+## 用例分析
+
+### 用例图
+
+![WX20170618-130655@2x](/Users/Darain/Dropbox/学分认定申请/WX20170618-130655@2x.png)
+
+### 用例分析文档
+
+![WX20170618-132352@2x](/Users/Darain/Dropbox/学分认定申请/usercase/WX20170618-132352@2x.png)
+
+![WX20170618-132624@2x](/Users/Darain/Dropbox/学分认定申请/usercase/WX20170618-132624@2x.png)
 
 
 
-## Motivation
-
-- 学生有看课表的需求
-- 学生查看Sakai各科目是否有更新作业操作步骤与页面跳转较繁琐，希望简化这一系列动作
-- 学生有查询绩点与成绩的需求
-
-希望能够开发出一个APP，集成这些功能。
 
 
+![WX20170618-132610@2x](/Users/Darain/Dropbox/学分认定申请/usercase/WX20170618-132610@2x.png)
 
-## User Benefits
+![WX20170618-132842@2x](/Users/Darain/Dropbox/学分认定申请/usercase/WX20170618-132842@2x.png)
 
-### 对于普通用户：
+## 实体类类图
 
-- 解决了常用的一些功能需求
-- 提供了Android与iOS双平台的APP
+### 名词分析法
 
-### 对于开发者：
+| 潜在类列表   | 是/否  | 类名/原因               |
+| ------- | ---- | ------------------- |
+| 用户      | 是    | User                |
+| 课表      | 是    | CourseTable         |
+| sakai作业 | 是    | SakaiHomework       |
+| 课程成绩    | 是    | StudentAllTermGrade |
 
-- 提供了restful API
-- 提供了完整的代码实现
+![实体类类图](/Users/Darain/Dropbox/学分认定申请/usercase/实体类类图.png)
+
+## 后端程序类图
+
+![web](/Users/Darain/Dropbox/学分认定申请/usercase/web.png)
+
+### controller层
+
+controller层主要负责对外暴露的API服务，只依赖于service层的若干类。自身通过调用service层的类获取所需数据，对数据封装成HttpResult类然后转化成json格式返回给客户端。
+
+controller负责进行权限验证，所有权限验证都在这一层进行。
+
+### service层
+
+service层主要负责数据的处理，只依赖与repository层与casclient层。
+
+通过casclient层与repository层的类获取底层直接数据，自身会对数据进行特定处理，然后返回给controller层调用者。
+
+### casclient层
+
+casclient层负责实时数据的爬取工作，负责从学校的相关网站抓取所需的相关数据，然后返回给service层的调用者，不依赖与其他类而独立运行。
+
+### repository层
+
+即数据库层，负责操作数据库，本项目使用MySQL数据库，并使用MyBatis作为ORM框架。
+
+### DTO类
+
+DTO类是会在网络中进行数据传输的类，也是API返回数据时所封装的类。
+
+### Entity类
+
+Entity类是实体类，与DTO类类似，但本身不参与网络传输。
 
 
 
-## Features and Requirements
+## 顺序图
 
-### Back End Features
+### 登录
 
-- Restful API，对于所有实现的功能，完成了其restful API的开发
-- 提供restfulAPI的文档
-- 实现了基于springsecurity的权限控制系统
-- 实现了基于Aspect的日志管理系统
-- 实现了基于Druid的基础性能监控
-- 实现了基于redis的缓存系统
-- 完成了基本的测试模块
-- 项目地址:https://gitlab.com/Darain/sustech-helper-server
+![登录](/Users/Darain/Dropbox/学分认定申请/seq/登录.png)
 
-### Back End Requirements
+### 查看课表
 
-- spring boot
-- redis
-- MySQL
-- MyBatis
-- spring security
-- lombok
-- Jsoup
-- Gson
-- druid
-- kotlin
-- ……
+![查看课表](/Users/Darain/Dropbox/学分认定申请/seq/查看课表.png)
 
-### Front End Features
+### 查看sakai作业
 
-- 基于React-Native框架的双平台APP
-- 实现了自动导入课表的功能
-- 实现了查询sakai作业的功能
-- 实现了查询课程成绩的功能
-- 实现了数据存储及自动更新
-- 项目地址:https://gitlab.com/Darain/sustech-helper
+![sakai作业](/Users/Darain/Dropbox/学分认定申请/seq/sakai作业.png)
 
-### Front End Requirement
+### ###查看课程成绩
 
-- react-native
-- react
-- fetch
-- babel
-- jest
-- ……
+![课程成绩](/Users/Darain/Dropbox/学分认定申请/seq/课程成绩.png)
 
-## Design 
+##  
 
-### Back End Design
+## 前端UI设计
 
-- 总体使用MVC的设计模式
-- 权限控制
-  - 使用了基于Role的权限控制
-- 使用AOP技术进行代码复用
-- 使用restful接口
-- 数据全部存储在redis与MySQL
+- 整个UI系统较简单，首界面为登录界面，验证登录获取token后进入到主界面
+- 主界面包含课表界面、作业界面、成绩界面、个人信息界面等4个主要界面。
+  - 主界面中各界面使用底部导航栏进行切换。
 
-### Front End Design
+## 工作成果
 
-- 总体使用Single-Page的设计模式
+### 后端
 
-## User Interface
+以 spring-boot 框架为核心，Java 与 Kotlin 语言为基础，使用web的MVC模式，完成了服务学生校 园生活的后端服务的开发。
 
-### 对于个人用户
+### 后端服务功能
 
-- 提供了Android与iOS的双平台APP
-- 自动获取所有数据
-- 完整的数据展示接口
+自动获取学生课程表、获取学生 sakai 作业、查询学生考试成绩等。
 
-### 对于开发者
+### 后端高级特性
+
+基于 spring-security 的权限控制系统；基于 redis 的数据缓存系统；基于 Druid 框架的性能监控系统；基于 AOP 技术的日志框架。
+
+### 前端
+
+以 react-native 框架为核心，JavaScript 语言为基础，完成了学生助手的前端 Android 与 iOS 双平台 APP 的开发。
+
+### APP 功能
+
+登录模块；获取学生课表及相关的展示界面；获取学生 sakai 作业的模块与界面；查询学生考试成绩的模块与界面。
+
+### 前端高级特性
+
+基于 react-native-storage 的数据存储系统；基于react-native-tab-navigator 的底部导航栏；基于 whatwg-fetch 的网络请求模块。
+
+## 后端工作内容
 
 - 提供restful API接口
 - 提供API接口说明文档
 
-## Testing
+### 数据爬取
 
-- 使用Junit框架进行单元测试
-- 使用Kotlin语言编写测试代码
-- 使用Postman工具进行http接口测试
-- 使用druid进行性能监控
+基于Jsoup框架，提交学号与密码给学校对应的服务器，对于返回的页面使用xpath解析，映射为类，然后返回，完成单次信息爬去。
 
+共需要登录信息爬取、sakia作业爬取、学生课表爬取、学生成绩爬取等爬虫。
 
+完成爬取后，会将相关信息存储至redis缓存中，则再次收到相同请求时优先返回缓存数据。
 
+前端可以请求刷新缓存，即本次请求将爬取数据而不使用缓存数据。此操作将刷新对应的缓存数据。
 
+### 数据返回
 
+使用restful API，返回JSON格式的数据。
 
+### 权限控制
 
+使用spring-security框架，完成了基于ROLE规则的权限控制系统。
 
+### 性能监控
 
+基于Druid框架的性能监控系统，完成了对JDBC、web资源访问、token、IP等的监控。
 
+### 日志系统
 
+使用spring- AOP 技术，完成了日志系统的分离，完成扩展性较高的日志系统。
 
+### 数据缓存
 
-## 附录：API说明
-
-### 用户登录
-
-登录请求:
-
-```java
-Method:POST
-url:http://localhost:8080/oauth/token
-headers:{
-  Authorization:'Basic YXBwOmFwcA=='
-}
-body:{
-  username:'',//用户名
-  password:'',//密码
-  grant_type:'password',//默认为密码认证
-}
-```
-
-返回结果(JSON):
-
-```java
-{
-  "access_token": "d307839c-d9fd-47ed-8791-e61d9914ae88",//使用此值访问
-  "token_type": "bearer",
-  "refresh_token": "4fea61d0-968d-47f9-9e22-64e61524325b",
-  "expires_in": 603347,
-  "scope": "read write"
-}
-```
-
-### 查询成绩
-
-token请求:
-
-```java
-Method:GET
-url:"http://localhost:8080/user/grade"
-headers:{
-  Authorization:'access_token' //使用登录请求返回的token
-}
-```
-
-用户名密码请求:
-
-```python
-Method:POST
-url:"http://localhost:8080/api/user/grade"
-headers:{
-  username:'',
-  passwrod:'',    
-}
-```
-
-返回结果(JSON):
-
-```javascript
-{
-  "code":200,
-  "msg":"success",
-  "result":{
-    "studsentid":studsentid,
-    "termGradeList": [
-	{
-      "term":term,//学期
-      "gradeList":[
-        {
-          "courseid": "CH101",
-            "courseName": "化学原理",
-            "grade": "86",
-            "credit": 4,
-            "courseAttribute": "必修"
-        },
-        //...
-      ]
-	},
-    ]
-  }
-}
-```
+使用redis 存储数据，完成了对爬取数据、用户登录信息、权限认证信息等的缓存，大大降低了服务响应时间（从2秒降低到了40毫秒）。
 
 
 
-### sakai作业查询
+## APP工作内容
 
-token请求:
+### 本地数据缓存
 
-```javascript
-Method:GET
-url:"http://localhost:8080/sakai/homework?refresh=true"
-headers:{
-  Authorization:'access_token' //使用登录请求返回的token
-}
-```
+使用react-native-storage 框架，完成了APP本地数据存储系统，降低了热启动的响应时间，避免重复获取数据。
 
-用户名与密码请求:
+### 底部导航栏
 
-```javascript
-Method:POST
-url:"http://localhost:8080/api/sakai/homework?refresh=true"
-headers:{
-  username:'',
-  password:'',
-}
-```
+使用react-native-tab-navigator 框架，完成了APP的底部导航栏的开发，同时十分便于拓展。
 
+### 页面设计
 
+APP采用较流行的底部导航设计。
 
-### 课表查询
+首页面为登录界面，当完成登陆后进入到主界面，此时可以查看课表、作业、成绩等数据界面。
 
-token请求:
+## 数据通信
 
-```javascript
-Method:GET
-url:"http://localhost:8080/user/courseTable?refresh=true"
-headers:{
-  Authorization:'access_token' //使用登录请求返回的token
-}
-```
+后端提供基于http协议的restful API。
 
-用户名与密码请求:
+前端使用 whatwg-fetch 网络请求模块，发送access_token及相应请求数据，服务端检查权限后返回对应数据。
 
-```javascript
-Method:POST
-url:"http://localhost:8080/api/user/courseTable?refresh=true"
-headers:{
-  username:'',
-  password:'',
-}
-```
+## 测试
 
-返回结果(JSON):
+主要对后端服务进行测试。
 
-```json
-{
-  "code": 200,
-  "result": {
-    "studentid": studentid,
-    "courses": [
-      {
-        "weekly": 4,
-        "section": 2,
-        "courseName": "软件工程",
-        "teachers": "张煜群",
-        "classRoom": "一教108"
-      },
-      {
-        "weekly": 4,
-        "section": 3,
-        "courseName": "软件工程",
-        "teachers": "朱悦铭",
-        "classRoom": "二教205机房"
-      },
-    ]
-  },
-  "msg": "success"
-}
-```
+### JUnit框架
 
+使用JUnit框架完成内部单元测试，针对casclient层或service层的相关功能类，测试其所有对外接口。
+
+测试结果：所有单元测试均通过。
+
+具体测试代码及测试数据可参见项目地址https://gitlab.com/Darain/sustech-helper-server。
+
+### Postman
+
+使用postman程序完成对外部restful接口的测试。
+
+主要测试其性能、响应时间、缓存生效与否等。
+
+所有本地测试结果均合格。
+
+### 存在问题与解决方案
+
+根据postman测试结果，主要性能问题在于爬虫速度，由于网络限制以及页面解析速度，每次获取实时数据需要2~6秒（试网络情况而定），网络IO是限制服务器响应时间的最大因素。
+
+根据此现象，加入了缓存模块，即服务器优先返回缓存数据，除非客户端主动声明需要实时数据或缓存过期或缓存不存在，才会实时爬取，返回实时数据。
+
+这一功能使得服务器数据响应时间降低至30ms（本地），极大的提高了服务器的响应速度，并且降低服务器负载。
