@@ -37,21 +37,21 @@ https://gitlab.com/Darain/sustech-helper-server
 
 ### 用例图
 
-![WX20170618-130655@2x](/Users/Darain/Dropbox/学分认定申请/WX20170618-130655@2x.png)
+![WX20170618-130655@2x](./doc/WX20170618-130655@2x.png)
 
 ### 用例分析文档
 
-![WX20170618-132352@2x](/Users/Darain/Dropbox/学分认定申请/usercase/WX20170618-132352@2x.png)
+![WX20170618-132352@2x](./doc/usercase/WX20170618-132352@2x.png)
 
-![WX20170618-132624@2x](/Users/Darain/Dropbox/学分认定申请/usercase/WX20170618-132624@2x.png)
-
-
+![WX20170618-132624@2x](./doc/usercase/WX20170618-132624@2x.png)
 
 
 
-![WX20170618-132610@2x](/Users/Darain/Dropbox/学分认定申请/usercase/WX20170618-132610@2x.png)
 
-![WX20170618-132842@2x](/Users/Darain/Dropbox/学分认定申请/usercase/WX20170618-132842@2x.png)
+
+![WX20170618-132610@2x](./doc/usercase/WX20170618-132610@2x.png)
+
+![WX20170618-132842@2x](./doc/usercase/WX20170618-132842@2x.png)
 
 ## 实体类类图
 
@@ -64,11 +64,11 @@ https://gitlab.com/Darain/sustech-helper-server
 | sakai作业 | 是    | SakaiHomework       |
 | 课程成绩    | 是    | StudentAllTermGrade |
 
-![实体类类图](/Users/Darain/Dropbox/学分认定申请/usercase/实体类类图.png)
+![实体类类图](./doc/usercase/实体类类图.png)
 
 ## 后端程序类图
 
-![web](/Users/Darain/Dropbox/学分认定申请/usercase/web.png)
+![web](./doc/usercase/web.png)
 
 ### controller层
 
@@ -104,21 +104,21 @@ Entity类是实体类，与DTO类类似，但本身不参与网络传输。
 
 ### 登录
 
-![登录](/Users/Darain/Dropbox/学分认定申请/seq/登录.png)
+![登录](./doc/seq/登录.png)
 
 ### 查看课表
 
-![查看课表](/Users/Darain/Dropbox/学分认定申请/seq/查看课表.png)
+![查看课表](./doc/seq/查看课表.png)
 
 ### 查看sakai作业
 
-![sakai作业](/Users/Darain/Dropbox/学分认定申请/seq/sakai作业.png)
+![sakai作业](./doc/seq/sakai作业.png)
 
 ### ###查看课程成绩
 
-![课程成绩](/Users/Darain/Dropbox/学分认定申请/seq/课程成绩.png)
+![课程成绩](./doc/seq/课程成绩.png)
 
-##  
+## 
 
 ## 前端UI设计
 
